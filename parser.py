@@ -44,7 +44,24 @@ def parse_model(xml_path: str) -> dict:
         "aggregations": aggregations,
         "root_class": root_class,
     }
-
-                
+               
 def get_children_by_parent(model: dict) -> dict:
-    raise NotImplementedError
+    children_by_parent = {}
+
+    for aggregation in model["aggregations"]:
+        parent = aggregation["target"]
+        child = aggregation["source"]
+        source_multiplicity = aggregation["sourceMultiplicity"]
+        target_multiplicity = aggregation["targetMultiplicity"]
+
+        if parent not in children_by_parent:
+            children_by_parent[parent] = []
+
+        children_by_parent[parent].append({
+            "child": child,
+            "source_multiplicity": source_multiplicity,
+            "target_multiplicity": target_multiplicity,
+        })
+
+    return children_by_parent
+        
