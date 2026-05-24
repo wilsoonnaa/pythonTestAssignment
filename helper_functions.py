@@ -1,18 +1,19 @@
-# Helper functions
 def _parse_multiplicity(value: str) -> tuple[str, str]:
     if ".." in value:
-        min_value, max_value = value.split("..")
+        min_value, max_value = value.split("..", 1)
         return min_value, max_value
     return value, value
 
-def _build_class_multiplicities(model: dict) -> dict:
+
+def build_class_multiplicities(model: dict) -> dict:
     lookup = {}
     for aggregation in model["aggregations"]:
         source = aggregation["source"]
         lookup[source] = _parse_multiplicity(aggregation["sourceMultiplicity"])
     return lookup
 
-def _post_order_classes(root_class: str, children_by_parent: dict) -> list:
+
+def post_order_classes(root_class: str, children_by_parent: dict) -> list:
     ordered = []
 
     def visit(class_name: str) -> None:
