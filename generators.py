@@ -1,3 +1,12 @@
+"""Генерация выходных артефактов.
+
+Содержит функции для формирования config.xml, meta.json, delta.json
+и результата применения дельты к config.json:
+generate_delta — вычисляет разницу между config и patched config;
+apply_delta — применяет дельту к исходному конфигу;
+generate_meta_json — формирует метаданные классов для UI;
+generate_config_xml — строит вложенное XML-дерево конфигурации.
+"""
 from helper_functions import build_class_multiplicities, post_order_classes
 
 

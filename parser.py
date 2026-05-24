@@ -1,5 +1,12 @@
+"""Разбор UML-модели из XML.
+
+Содержит функции для чтения impulse_test_input.xml:
+parse_model — извлекает классы, атрибуты и агрегации;
+get_children_by_parent — строит карту «родитель → список дочерних классов».
+"""
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
 
 def parse_model(xml_path: Path) -> dict:
     tree = ET.parse(xml_path)
