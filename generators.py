@@ -1,3 +1,5 @@
+from helper_functions import _build_class_multiplicities, _post_order_classes
+
 def generate_delta(config: dict, patched: dict) -> dict:
     additions = []
     deletions = []
