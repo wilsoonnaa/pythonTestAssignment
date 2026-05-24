@@ -15,7 +15,7 @@ def generate_delta(config: dict, patched: dict) -> dict:
                 "from": config[key],
                 "to": patched[key],
             })
-        
+
     for key in config:
         if key not in patched:
             deletions.append(key)
@@ -38,17 +38,44 @@ def apply_delta(config: dict, delta: dict) -> dict:
 
     for addition in delta["additions"]:
         result[addition["key"]] = addition["value"]
-        
+     
     return result
 
-def _parse_multiplicity(value: str) -> tuple[str, str]:
-    if ".." in value:
-        min_value, max_value = value.split("..")
-        return min_value, max_value
-    return value, value
+def generate_meta_json(model: dict, children_by_parent: dict) -> list:
+    meta = []
 
-def _find_class_multiplicity(class_name: str, model: dict) -> tuple[str, str] | None:
-    for aggregation in model["aggregations"]:
-        if aggregation["source"] == class_name:
-            return _parse_multiplicity(aggregation["sourceMultiplicity"])
-    return None
+    class_multiplicities = _build_class_multiplicities(model)
+
+    ordered_classes = _post_order_classes(model["root_class"], children_by_parent)
+    for class_name in ordered_classes:
+        class_data = model["classes"][class_name]
+        parameters = []
+
+        for attribute in class_data["attributes"]:
+            parameters.append({
+                "name": attribute["name"],
+                "type": attribute["type"],
+            })
+
+        for child in children_by_parent.get(class_name, []):
+            parameters.append({
+                "name": child["child"],
+                "type": "class",
+            })
+
+        entry = {
+            "class": class_name,
+            "documentation": class_data["documentation"],
+            "isRoot": class_data["isRoot"],
+        }
+
+        if class_name in class_multiplicities:
+            min_value, max_value = class_multiplicities[class_name]
+            entry["max"] = max_value
+            entry["min"] = min_value
+
+        entry["parameters"] = parameters
+        meta.append(entry)
+
+    return meta  
+
